@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn with Raj</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">📚 <span>Learn with</span> Raj</div>
+  <div class="nav-links">
+    <a href="#search">Browse</a>
+    <a href="#upload">Upload</a>
+    <a href="#community">Community</a>
+  </div>
+  <div class="nav-actions">
+    <button class="dark-toggle" onclick="toggleDark()">☀️ Light</button>
+    <div id="auth-buttons">
+      <button class="btn btn-ghost" onclick="openModal('login')">Login</button>
+      <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+    </div>
+    <div id="user-info" style="display:none;align-items:center;gap:10px">
+      <span id="user-name" style="font-size:13px;color:var(--text2)"></span>
+      <button class="btn btn-ghost" onclick="logoutUser()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span></span>Built by students, for students</div>
+    <h1>Find <em>Any Note</em><br>for Any Subject</h1>
+    <p class="hero-sub">Search real student-uploaded notes across subjects, universities, and syllabi. Rate, share, and learn together.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg" onclick="document.getElementById('search').scrollIntoView({behavior:'smooth'})">Browse Notes</button>
+      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('upload').scrollIntoView({behavior:'smooth'})">Upload Notes</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="s1">0</div><div class="stat-label">Notes Uploaded</div></div>
+      <div class="stat"><div class="stat-num" id="s2">0</div><div class="stat-label">Subjects</div></div>
+      <div class="stat"><div class="stat-num" id="s3">0</div><div class="stat-label">Downloads</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<section class="search-section reveal" id="search">
+  <div class="section-label">Browse & Search</div>
+  <div class="section-title">Find Notes Instantly</div>
+  <p class="section-sub">All notes are real — uploaded by students like you.</p>
+
+  <div class="search-bar">
+    <span style="color:var(--text3);font-size:16px">🔍</span>
+    <input type="text" id="main-search" placeholder="Try: Binary Tree, Pointers, Integration..." oninput="filterNotes()">
+    <button class="search-btn" onclick="filterNotes()">Search</button>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="filterBySubject(this,'')">All</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'DSA')">DSA</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'Physics')">Physics</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'C Programming')">C Programming</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'DBMS')">DBMS</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'Maths')">Maths</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'OS')">OS</button>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <p style="font-size:13px;color:var(--text2)" id="results-count">Loading notes...</p>
+    <select onchange="sortNotes(this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--text2);outline:none">
+      <option value="newest">Newest First</option>
+      <option value="downloads">Most Downloaded</option>
+      <option value="rating">Top Rated</option>
+    </select>
+  </div>
+
+  <div id="loading-notes" style="text-align:center;padding:3rem;color:var(--text3)">
+    <div style="font-size:2rem;margin-bottom:1rem">⏳</div>Loading notes...
+  </div>
+  <div class="notes-grid" id="notes-grid" style="display:none"></div>
+  <div id="no-notes" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+    <div style="font-size:3rem;margin-bottom:1rem">📭</div>No notes found. Be the first to upload!
+  </div>
+</section>
+
+<!-- UPLOAD -->
+<section class="upload-section" id="upload">
+  <div class="upload-inner reveal">
+    <div class="section-label">Share Knowledge</div>
+    <div class="section-title">Upload Your Notes</div>
+    <p class="section-sub" style="margin-bottom:2rem">Help fellow students. Your notes will be searchable by everyone.</p>
+
+    <div id="upload-login-warn" style="display:none;background:rgba(124,111,247,0.1);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
+      <p style="color:var(--text2);margin-bottom:1rem">You need to be logged in to upload notes.</p>
+      <button class="btn btn-primary" onclick="openModal('signup')">Create Free Account</button>
+    </div>
+
+    <div id="upload-form">
+      <div class="upload-zone" id="drop-zone"
+        onclick="document.getElementById('file-input').click()"
+        ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <input type="file" id="file-input" hidden accept=".pdf,.png,.jpg,.jpeg,.txt" onchange="handleFiles(this.files)">
+        <div class="upload-icon" id="upload-icon">📤</div>
+        <div class="upload-text" id="upload-text">Drag & drop file here, or click to browse</div>
+        <div class="upload-sub">PDF • Images • Text</div>
+        <div class="upload-types">
+          <span class="upload-type-badge type-pdf">PDF</span>
+          <span class="upload-type-badge type-img">Images</span>
+          <span class="upload-type-badge type-text">Text</span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Title *</label>
+          <input class="form-input" id="note-title" placeholder="e.g. Complete Pointer Notes">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Topic *</label>
+          <input class="form-input" id="note-topic" placeholder="e.g. Pointers, Binary Tree...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <select class="form-select" id="note-subject">
+            <option value="">Select Subject</option>
+            <option>DSA</option><option>C Programming</option>
+            <option>Physics</option><option>DBMS</option>
+            <option>Maths</option><option>OS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">University</label>
+          <input class="form-input" id="note-university" placeholder="e.g. VTU, SPPU, DU...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester</label>
+          <select class="form-select" id="note-semester">
+            <option value="">Select Semester</option>
+            <option>Semester 1</option><option>Semester 2</option>
+            <option>Semester 3</option><option>Semester 4</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma separated)</label>
+          <input class="form-input" id="note-tags" placeholder="e.g. DSA, Trees, Exam">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="note-desc" placeholder="Describe what's in these notes..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="publish-btn"
+        style="width:100%;padding:13px;margin-top:1.5rem;font-size:15px;border-radius:10px"
+        onclick="uploadNote()">Publish Notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY LEADERBOARD -->
+<section class="leaderboard-section reveal" id="community">
+  <div class="section-label">Community</div>
+  <div class="section-title">Top Contributors</div>
+  <p class="section-sub">Students who help the most, recognized the most.</p>
+  <div class="leaderboard-grid">
+    <div class="leaderboard-card">
+      <div class="leaderboard-title">🏆 Top Uploaders</div>
+      <div id="uploaders-list"><div style="padding:2rem;text-align:center;color:var(--text3)">Loading...</div></div>
+    </div>
+    <div class="leaderboard-card">
+      <div class="leaderboard-title">⭐ Most Downloaded</div>
+      <div id="helpful-list"><div style="padding:2rem;text-align:center;color:var(--text3)">Loading...</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">📚 Learn with Raj</div>
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Privacy</a>
+    <a href="#">Terms</a><a href="#">Contact</a>
+  </div>
+  <div class="footer-note">© 2024 Learn with Raj. Made with 💜 for students.</div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('auth-modal').classList.remove('open')">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn With Raj — Student Notes Platform</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Your stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-logo">📚 <span>Note</span>Vault</div>
+  <div class="nav-links">
+    <a href="#search">Browse</a>
+    <a href="#upload">Upload</a>
+    <a href="#community">Community</a>
+    <a href="#ai">AI Tools</a>
+  </div>
+  <div class="nav-actions">
+    <button class="dark-toggle" onclick="toggleDark()">☀️ Light</button>
+    <button class="btn btn-ghost"   onclick="openModal('login')">Login</button>
+    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span></span>Built by students, for students</div>
+    <h1>Find <em>Any Note</em><br>for Any Subject</h1>
+    <p class="hero-sub">
+      Search thousands of student-uploaded notes across subjects,
+      universities, and syllabi. Rate, share, and learn together.
+    </p>
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg"
+        onclick="document.getElementById('search').scrollIntoView({behavior:'smooth'})">
+        Browse Notes
+      </button>
+      <button class="btn btn-ghost btn-lg"
+        onclick="document.getElementById('upload').scrollIntoView({behavior:'smooth'})">
+        Upload Your Notes
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="s1">0</div><div class="stat-label">Notes Uploaded</div></div>
+      <div class="stat"><div class="stat-num" id="s2">0</div><div class="stat-label">Students</div></div>
+      <div class="stat"><div class="stat-num" id="s3">0</div><div class="stat-label">Subjects</div></div>
+      <div class="stat"><div class="stat-num" id="s4">0</div><div class="stat-label">Downloads</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH & BROWSE -->
+<section class="search-section reveal" id="search">
+  <div class="section-label">Browse &amp; Search</div>
+  <div class="section-title">Find Notes Instantly</div>
+  <p class="section-sub">Search by subject, topic, or keyword — like Google for your coursework.</p>
+
+  <div class="search-bar">
+    <span style="color:var(--text3);font-size:16px">🔍</span>
+    <input type="text" id="main-search"
+      placeholder="Try: Binary Tree, Integration, Pointers, SQL..."
+      oninput="filterNotes()" />
+    <select class="form-select" id="sem-filter" onchange="filterNotes()"
+      style="border:none;background:var(--surface2);border-radius:8px;padding:8px 12px;font-size:13px">
+      <option value="">All Semesters</option>
+      <option>Semester 1</option>
+      <option>Semester 2</option>
+      <option>Semester 3</option>
+      <option>Semester 4</option>
+    </select>
+    <button class="search-btn" onclick="filterNotes()">Search</button>
+  </div>
+
+  <div class="filter-row" id="subject-filters">
+    <button class="filter-chip active" onclick="filterBySubject(this,'')">All</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'DSA')">DSA</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'Physics')">Physics</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'C Programming')">C Programming</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'DBMS')">DBMS</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'Maths')">Maths</button>
+    <button class="filter-chip" onclick="filterBySubject(this,'OS')">OS</button>
+  </div>
+
+  <div id="topic-section">
+    <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Popular Topics</p>
+    <div class="topics-grid" id="topics-grid">
+      <div class="topic-card" onclick="searchTopic('Pointers')">
+        <div class="topic-icon">👉</div><div class="topic-name">Pointers</div><div class="topic-count">42 notes</div>
+      </div>
+      <div class="topic-card" onclick="searchTopic('Binary Tree')">
+        <div class="topic-icon">🌲</div><div class="topic-name">Binary Tree</div><div class="topic-count">38 notes</div>
+      </div>
+      <div class="topic-card" onclick="searchTopic('Integration')">
+        <div class="topic-icon">∫</div><div class="topic-name">Integration</div><div class="topic-count">55 notes</div>
+      </div>
+      <div class="topic-card" onclick="searchTopic('Linked List')">
+        <div class="topic-icon">🔗</div><div class="topic-name">Linked List</div><div class="topic-count">31 notes</div>
+      </div>
+      <div class="topic-card" onclick="searchTopic('SQL Joins')">
+        <div class="topic-icon">🗄️</div><div class="topic-name">SQL Joins</div><div class="topic-count">29 notes</div>
+      </div>
+      <div class="topic-card" onclick="searchTopic('Structures')">
+        <div class="topic-icon">📦</div><div class="topic-name">Structures</div><div class="topic-count">24 notes</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <p style="font-size:13px;color:var(--text2)" id="results-count">Showing 6 notes</p>
+      <select class="form-select" onchange="sortNotes(this.value)" style="font-size:13px;padding:6px 12px">
+        <option value="rating">Sort: Top Rated</option>
+        <option value="downloads">Most Downloaded</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div class="notes-grid" id="notes-grid"></div>
+  </div>
+</section>
+
+<!-- UPLOAD -->
+<section class="upload-section" id="upload">
+  <div class="upload-inner reveal">
+    <div class="section-label">Share Knowledge</div>
+    <div class="section-title">Upload Your Notes</div>
+    <p class="section-sub" style="margin-bottom:2rem">
+      Help fellow students. Your notes could be someone's exam savior.
+    </p>
+    <div class="upload-zone" id="drop-zone"
+      onclick="document.getElementById('file-input').click()"
+      ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <input type="file" id="file-input" hidden multiple
+        accept=".pdf,.png,.jpg,.jpeg,.txt" onchange="handleFiles(this.files)" />
+      <div class="upload-icon" id="upload-icon">📤</div>
+      <div class="upload-text" id="upload-text">Drag &amp; drop files here, or click to browse</div>
+      <div class="upload-sub">Supports PDF, Images, and Text files</div>
+      <div class="upload-types">
+        <span class="upload-type-badge type-pdf">PDF</span>
+        <span class="upload-type-badge type-img">Images</span>
+        <span class="upload-type-badge type-text">Text</span>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <select class="form-select">
+          <option>Data Structures</option><option>C Programming</option>
+          <option>Physics</option><option>DBMS</option>
+          <option>Mathematics</option><option>OS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Topic</label>
+        <input class="form-input" type="text" placeholder="e.g. Linked List, Integration...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">University</label>
+        <input class="form-input" type="text" placeholder="e.g. VTU, SPPU, DU...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Semester</label>
+        <select class="form-select">
+          <option>Semester 1</option><option>Semester 2</option>
+          <option>Semester 3</option><option>Semester 4</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea"
+          placeholder="Describe what's in these notes — topics covered, exam relevance, etc."></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary"
+      style="width:100%;padding:13px;margin-top:1.5rem;font-size:15px;border-radius:10px"
+      onclick="showToast('✅','Notes uploaded successfully! Now under review.','#4ade80')">
+      Publish Notes
+    </button>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="leaderboard-section reveal" id="community">
+  <div class="section-label">Community</div>
+  <div class="section-title">Top Contributors</div>
+  <p class="section-sub">Students who help the most, recognized the most.</p>
+  <div class="leaderboard-grid">
+    <div class="leaderboard-card">
+      <div class="leaderboard-title">🏆 Top Uploaders</div>
+      <div id="uploaders-list"></div>
+    </div>
+    <div class="leaderboard-card">
+      <div class="leaderboard-title">⭐ Most Helpful Notes</div>
+      <div id="helpful-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section class="ai-section reveal" id="ai">
+  <div class="ai-card">
+    <div class="ai-badge">✨ AI Powered</div>
+    <h2 class="ai-title">Ask Anything From Your Notes</h2>
+    <p class="ai-sub">
+      Our AI reads your notes and answers questions, summarizes content,
+      and explains complex topics in simple words.
+    </p>
+    <div class="ai-chat-demo">
+      <div class="chat-msg chat-user">
+        <div class="chat-avatar">U</div>
+        <div class="chat-text">Explain Binary Search Tree in simple terms from the uploaded notes</div>
+      </div>
+      <div class="chat-msg chat-ai">
+        <div class="chat-avatar">AI</div>
+        <div class="chat-text">
+          A <strong>Binary Search Tree</strong> is like a sorted bookshelf —
+          every book on the left is smaller, every book on the right is bigger.
+          So when you're searching, you always know which direction to go,
+          making it super fast!
+        </div>
+      </div>
+      <div class="chat-msg chat-ai">
+        <div class="chat-avatar">AI</div>
+        <div class="typing-indicator">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.5rem">
+      <input class="form-input" type="text"
+        placeholder="Ask a question about any notes..." style="flex:1" />
+      <button class="btn btn-primary"
+        onclick="showToast('🤖','AI feature coming soon!','#7c6ff7')">Ask AI ✨</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">📚 Learn with Raj</div>
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Privacy</a>
+    <a href="#">Terms</a><a href="#">Contact</a>
+  </div>
+  <div class="footer-note">© 2026 Learn with Raj. Made with 💜 for students.</div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close"
+      onclick="document.getElementById('auth-modal').classList.remove('open')">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- JavaScript -->
+<script src="script.js"></script>
+
+</body>
+</html>
+```
+
+---
+
+**Important:** This file alone won't look right without the other two files in the same folder. Make sure you have:
+```
+Learn with Raj/
+├── index.html   ← paste the code above here
+├── style.css    ← already downloaded
+└── script.js    ← already downloaded
